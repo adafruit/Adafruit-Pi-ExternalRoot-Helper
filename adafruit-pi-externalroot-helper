@@ -104,6 +104,7 @@ info "fs create" "Creating ${target_partition}"
     parted --script --align optimal "${target_drive}" mkpart primary ext4 0% 100%
 
 info "fs create" "Creating ext4 filesystem on ${target_partition}"
+    sleep 5
     mkfs -t ext4 -L rootfs "${target_partition}"
 
 info "fs id" "Getting UUID for target partition"
