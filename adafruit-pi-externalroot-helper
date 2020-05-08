@@ -128,7 +128,7 @@ info "fs copy" "Mounting ${target_partition} on /mnt"
 
 info "fs copy" "Copying root filesystem to ${target_partition} with rsync"
 info "fs copy" "This will take quite a while.  Please be patient!"
-    rsync -ax / /mnt
+    rsync -ax --info=progress2 / /mnt
 
 info "boot config" "Configuring boot from {$target_partition}"
     # rootdelay=5 is likely not necessary here, but seems to do no harm.
