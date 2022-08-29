@@ -126,9 +126,9 @@ info "fs copy" "This will take quite a while.  Please be patient!"
     rsync -ax / /mnt
 
 info "boot config" "Configuring boot from {$target_partition}"
-    # rootdelay=5 is likely not necessary here, but seems to do no harm.
+    #rootwait is already in the file and is sufficient
     cp /boot/cmdline.txt /boot/cmdline.txt.bak
-    sed -i "s|root=\/dev\/mmcblk0p2|root=PARTUUID=${partition_unique_guid} rootdelay=5|" /boot/cmdline.txt
+    sed -i "s|root=PARTUUID=\S\+ |root=PARTUUID=$PARTUUID |g" /boot/cmdline.txt
 
 info "boot config" "Commenting out old root partition in /etc/fstab, adding new one"
     # These changes are made on the new drive after copying so that they
