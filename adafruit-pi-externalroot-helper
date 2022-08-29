@@ -112,13 +112,8 @@ info "fs id" "Getting UUID for target partition"
     export target_partition_uuid=$UUID
 
 info "fs id" "Getting Partition unique GUID for target filesystem"
-    # Ok, so the only way I was able to get this was using gdisk.
-    # I don't quite understand the different between this value and
-    # the one you can get with blkid and tune2fs (which seem to give
-    # the same thing).  Nevertheless, this seems to be necessary to
-    # get a value that can be used in cmdline.txt.  I think it's a
-    # GUID specifically for the GPT partition table entry.
-    export partition_unique_guid=`echo 'i' | sudo gdisk "${target_drive}" | grep 'Partition unique GUID:' | awk '{print $4}'`
+    #This value is also part of the blkid info
+    export partition_unique_guid=$PARTUUID
 
 info "fs id" "Target partition UUID: ${target_partition_uuid}"
 info "fs id" "Partition unique GUID: ${partition_unique_guid}"
