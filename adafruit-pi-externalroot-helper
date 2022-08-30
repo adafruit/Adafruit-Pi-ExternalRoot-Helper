@@ -111,12 +111,12 @@ info "fs id" "Getting UUID for target partition"
     eval `blkid -o export "${target_partition}"`
     export target_partition_uuid=$UUID
 
-info "fs id" "Getting Partition unique GUID for target filesystem"
+info "fs id" "Getting Partition unique PARTUUID for target filesystem"
     #This value is also part of the blkid info
-    export partition_unique_guid=$PARTUUID
+    export partition_unique_partuuid=$PARTUUID
 
 info "fs id" "Target partition UUID: ${target_partition_uuid}"
-info "fs id" "Partition unique GUID: ${partition_unique_guid}"
+info "fs id" "Partition unique PARTUUID: ${partition_unique_partuuid}"
 
 info "fs copy" "Mounting ${target_partition} on /mnt"
     mount "${target_partition}" /mnt
@@ -128,14 +128,16 @@ info "fs copy" "This will take quite a while.  Please be patient!"
 info "boot config" "Configuring boot from {$target_partition}"
     #rootwait is already in the file and is sufficient
     cp /boot/cmdline.txt /boot/cmdline.txt.bak
-    sed -i "s|root=PARTUUID=\S\+ |root=PARTUUID=$PARTUUID |g" /boot/cmdline.txt
+    sed -i "s|root=PARTUUID=\S\+ |root=PARTUUID=${partition_unique_partuuid} |g" /boot/cmdline.txt
 
 info "boot config" "Commenting out old root partition in /etc/fstab, adding new one"
     # These changes are made on the new drive after copying so that they
     # don't have to be undone in order to switch back to booting from the
     # SD card.
-    sed -i '/mmcblk0p2/s/^/#/' /mnt/etc/fstab
-    echo "/dev/disk/by-uuid/${target_partition_uuid}    /   ext4    defaults,noatime  0       1" >> /mnt/etc/fstab
+    #comment out old root entry from fstab (this approach respects previous comments)
+    sed -i -E 's|(^[^\#]*\s\/\s[^\#]*)|#\1|g' /mnt/etc/fstab
+    #add new root entry
+    echo "PARTUUID=${partition_unique_partuuid}    /   ext4    defaults,noatime  0       1" >> /mnt/etc/fstab
 
 info "boot config" "Ok, your system should be ready. You may wish to check:"
 info "boot config" "  /mnt/etc/fstab"
